@@ -15,7 +15,7 @@ public class SimplePlayerController : MonoBehaviour
 
     void Start()
     {
-        Utilities.SetCursorLocked(true);
+       Utilities.SetCursorLocked(true);
     }
 
     void Update()
