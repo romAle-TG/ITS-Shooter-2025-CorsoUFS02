@@ -1,82 +1,177 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 
-public class SimplePlayerController : MonoBehaviour
+[RequireComponent(typeof(CharacterController))]
+public class FirstPersonController : MonoBehaviour
 {
-    [Header("Movimento")]
-    public float speed = 5f;
-    public float sprintMultiplier = 1.5f;
+    [Header("Movement")]
+    [SerializeField] float moveSpeed = 5f;
+    [SerializeField] float crouchSpeedMultiplier = 0.5f;
 
-    [Header("Camera")]
-    public Transform cameraTransform;
-    public float lookSensitivity = 3f;
+    [Header("View")]
+    [SerializeField] Transform cameraRoot;
+    [SerializeField] float mouseSensitivity = 25f;
+    [SerializeField] float maxLookUp = 80f;
+    [SerializeField] float maxLookDown = -80f;
 
-    private bool isSprinting;
-    private float xRotation = 0f;
+    [Header("Jump & Gravity")]
+    [SerializeField] float jumpHeight = 1.5f;
+    [SerializeField] float gravity = -9.81f;
 
-    void Start()
+    [Header("Crouch")]
+    [SerializeField] float crouchHeight = 1.0f;
+
+    CharacterController controller;
+    PlayerInputActions inputActions;
+
+    Vector2 moveInput;     // direzione WASD
+    Vector2 lookInput;     // input per camera
+    float verticalVelocity;
+    float xRotation;       // rotazione verticale camera
+
+    float originalHeight;
+    Vector3 originalCenter;
+    bool isCrouching;
+
+    void Awake()
     {
-       Utilities.SetCursorLocked(true);
+        controller = GetComponent<CharacterController>();
+        originalHeight = controller.height;
+        originalCenter = controller.center;
+
+        // Istanzio la classe generata dall'Input System
+        inputActions = new PlayerInputActions();
+
+        // --- MOVE ---
+        inputActions.Player.Move.performed += ctx => //ctx = CallbackContext
+        {
+            moveInput = ctx.ReadValue<Vector2>();
+        };
+        inputActions.Player.Move.canceled += ctx =>
+        {
+            moveInput = Vector2.zero;
+        };
+
+        // --- LOOK ---
+        inputActions.Player.Look.performed += ctx =>
+        {
+            lookInput = ctx.ReadValue<Vector2>();
+        };
+        inputActions.Player.Look.canceled += ctx =>
+        {
+            lookInput = Vector2.zero;
+        };
+
+        // --- JUMP ---
+        inputActions.Player.Jump.performed += ctx =>
+        {
+            TryJump();
+        };
+
+        // --- CROUCH (tenere premuto) ---
+        inputActions.Player.Crouch.performed += ctx =>
+        {
+            StartCrouch();
+        };
+        inputActions.Player.Crouch.canceled += ctx =>
+        {
+            StopCrouch();
+        };
+    }
+
+    void OnEnable()
+    {
+        inputActions.Enable();
+    }
+
+    void OnDisable()
+    {
+        inputActions.Disable();
     }
 
     void Update()
     {
-        Sprint();
-        Move();
+        Movement();
         Look();
     }
 
-    // Movimento base con WASD, senza fisica
-    void Move()
+
+    void Look()
     {
-        float horizontal = Input.GetAxis("Horizontal"); // A/D
-        float vertical = Input.GetAxis("Vertical");   // W/S
+        // moltiplico per deltaTime per rendere la sensibilità indipendente dal framerate
+        Vector2 look = lookInput * mouseSensitivity * Time.deltaTime;
 
-        Vector3 inputDir = new Vector3(horizontal, 0f, vertical);
+        // Rotazione orizzontale del player (yaw)
+        transform.Rotate(Vector3.up * look.x);
 
-        if (inputDir.sqrMagnitude > 1f)
+        // Rotazione verticale della camera (pitch)
+        xRotation -= look.y;
+        xRotation = Mathf.Clamp(xRotation, maxLookDown, maxLookUp);
+
+        if (cameraRoot != null)
         {
-            inputDir.Normalize(); //importante normalizzare la velocità, poichè adittivamente in diagonale ci si muoverebbe più veloci
-        }
-
-        float currentSpeed = 0f;
-
-        if (isSprinting)
-        {
-            currentSpeed = speed * sprintMultiplier;
+            cameraRoot.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
         }
         else
         {
-            currentSpeed = speed;
+            Debug.LogWarning("FirstPersonController: cameraRoot non assegnato.");
         }
-
-        //float currentSpeed = speed * (isSprinting ? sprintMultiplier : 1f); ///utilizzando gli operatori in line
-
-        // Direzione relativa al facing del player
-        Vector3 move = transform.TransformDirection(inputDir) * currentSpeed * Time.deltaTime; //deltaTime ci permette di muoverci in maniera indipendente dal frame rate
-        transform.position += move;
     }
 
-    void Sprint()
+    void Movement()
     {
-        isSprinting = Input.GetKey(KeyCode.LeftShift); //se leftshift è premuto, allora il giocatore sta sprintando
-    }
+        bool isGrounded = controller.isGrounded;
 
-    // Rotazione player + camera con il mouse
-    void Look()
-    {
-        float mouseX = Input.GetAxis("Mouse X") * lookSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * lookSensitivity;
-
-        // Rotazione orizzontale del player
-        transform.Rotate(Vector3.up * mouseX);
-
-        // Rotazione verticale della camera
-        xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -80f, 80f);
-
-        if (cameraTransform != null)
+        // reset leggero per tenerlo attaccato al suolo
+        if (isGrounded && verticalVelocity < 0f)
         {
-            cameraTransform.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
+            verticalVelocity = -2f;
         }
+
+        // direzione locale (in base all'orientamento del player)
+        Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
+
+        // velocità: più lenta se crouch
+        float currentSpeed = isCrouching ? moveSpeed * crouchSpeedMultiplier : moveSpeed;
+        move *= currentSpeed;
+
+        // gravità
+        verticalVelocity += gravity * Time.deltaTime;
+        move.y = verticalVelocity;
+
+        controller.Move(move * Time.deltaTime);
+    }
+
+    void TryJump()
+    {
+        // può saltare solo se è a terra e non è accovacciato
+        if (controller.isGrounded && !isCrouching)
+        {
+            verticalVelocity = Mathf.Sqrt(jumpHeight * -2f * gravity);
+        }
+    }
+
+    void StartCrouch()
+    {
+        if (isCrouching) return;
+
+        isCrouching = true;
+        controller.height = crouchHeight;
+
+        // abbassa il centro per non farlo "fluttuare"
+        controller.center = new Vector3(
+            originalCenter.x,
+            crouchHeight / 2f,
+            originalCenter.z
+        );
+    }
+
+    void StopCrouch()
+    {
+        if (!isCrouching) return;
+
+        isCrouching = false;
+        controller.height = originalHeight;
+        controller.center = originalCenter;
     }
 }

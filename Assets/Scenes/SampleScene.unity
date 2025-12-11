@@ -2737,9 +2737,60 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 72ef3ce9a7a27fd4787e099946e1f411, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GamePause
-  pausePanel: {fileID: 0}
-  unpauseButton: {fileID: 0}
-  startPaused: 0
+  pausePanel: {fileID: 1715406392}
+  unpauseButton: {fileID: 2043195007}
+  startPaused: 1
+--- !u!1 &1240665403 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8624444807091676227, guid: 6b03abfef47e27049928f497436d6580, type: 3}
+  m_PrefabInstance: {fileID: 4356931253957983181}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1240665408
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240665403}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: faca58ff20c886c40a26713680abb489, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SimplePlayerController
+  moveSpeed: 5
+  crouchSpeedMultiplier: 0.5
+  cameraRoot: {fileID: 1628385117}
+  mouseSensitivity: 25
+  maxLookUp: 80
+  maxLookDown: -80
+  jumpHeight: 1.5
+  gravity: -9.81
+  crouchHeight: 1
+--- !u!143 &1240665409
+CharacterController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1240665403}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Height: 2
+  m_Radius: 0.5
+  m_SlopeLimit: 45
+  m_StepOffset: 0.3
+  m_SkinWidth: 0.08
+  m_MinMoveDistance: 0.001
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1244291660
 GameObject:
   m_ObjectHideFlags: 0
@@ -3523,6 +3574,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1628385117 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8750214996558174221, guid: 6b03abfef47e27049928f497436d6580, type: 3}
+  m_PrefabInstance: {fileID: 4356931253957983181}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1715406392
 GameObject:
   m_ObjectHideFlags: 0
@@ -4598,7 +4654,13 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 8624444807091676227, guid: 6b03abfef47e27049928f497436d6580, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1240665408}
+    - targetCorrespondingSourceObject: {fileID: 8624444807091676227, guid: 6b03abfef47e27049928f497436d6580, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1240665409}
   m_SourcePrefab: {fileID: 100100000, guid: 6b03abfef47e27049928f497436d6580, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
