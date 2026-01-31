@@ -2,61 +2,47 @@ using UnityEngine;
 
 public class EnemyShooter : Shooter
 {
-    [Header("Detection properties")]
+    [Header("Detection")]
     [SerializeField] private float detectionRadius = 50f;
     [SerializeField] private float scanFrequency = 0.25f;
     [SerializeField] private float spotReactionTime = 0.15f;
 
-    [Header("Engage / Aim")]
+    [Header("Engage")]
     [SerializeField] private float engageDistance = 50f;
     [SerializeField] private float rotationSpeed = 10f;
+
+    [Header("Weapon Pitch")]
+    [SerializeField] private Transform weaponHolderTransform;
     [SerializeField] private float weaponPitchSpeed = 10f;
     [SerializeField] private float minWeaponPitch = -45f;
     [SerializeField] private float maxWeaponPitch = 60f;
 
     [Header("Prediction")]
-    [Tooltip("Quanto velocemente la stima della velocità si adatta (0..1). Più alto = più reattivo.")]
     [Range(0f, 1f)]
     [SerializeField] private float velocityLerp = 0.4f;
-
-    [Tooltip("Limite massimo del tempo di anticipo (in secondi). Evita lead assurdi a distanze grandi.")]
     [SerializeField] private float maxLeadTime = 1.25f;
-
-    [Tooltip("Fallback altezza aim se non trova un collider sul player.")]
     [SerializeField] private float aimHeightFallback = 1.2f;
 
-    [Header("Weapon properties")]
-    [SerializeField] private float bulletSpeed = 20f;
-    [SerializeField] private GameObject bulletPrefab;
-    [SerializeField] private Transform weaponHolderTransform;
-
     private Transform playerTr;
-    private Health playerHealth;
+    private Collider playerCollider;
     private Health myHealth;
     private Transform weaponHolder;
-    private Collider playerCollider;
 
     private bool playerSpotted;
     private float spotTimer;
     private float scanTimer;
 
-    // Velocity estimate (works even without Rigidbody)
     private bool hasPlayerPos;
     private Vector3 lastPlayerPos;
     private Vector3 estimatedPlayerVel;
 
+    private Vector3 cachedAimPoint;
+
     protected override void Awake()
     {
         base.Awake();
-
         myHealth = GetComponent<Health>();
         weaponHolder = weaponHolderTransform;
-
-        if (weaponHolder == null)
-            Debug.LogError("[EnemyShooter] WeaponHolderTransform non assegnato nell'inspector.");
-
-        if (muzzle == null)
-            Debug.LogError("[EnemyShooter] Muzzle non assegnata (campo 'muzzle' in Shooter).");
 
         scanTimer = 0f; // scan immediato
     }
@@ -65,10 +51,9 @@ public class EnemyShooter : Shooter
     {
         ScanForPlayer();
 
-        if (!playerSpotted || playerTr == null)
+        if (!playerSpotted || playerTr == null || currentWeapon == null)
             return;
 
-        // Aggiorna subito la stima velocità anche durante la reaction (così non "parte in ritardo")
         UpdatePlayerVelocityEstimate();
 
         if (spotTimer < spotReactionTime)
@@ -77,12 +62,23 @@ public class EnemyShooter : Shooter
             return;
         }
 
-        RotateTowardsPredictedAimPoint();
+        cachedAimPoint = GetPredictedAimPoint();
+
+        if (!CanEngage(cachedAimPoint))
+            return;
+
+        RotateTowardsAimPoint(cachedAimPoint);
 
         if (bulletsLeft > 0)
-            TryShoot();
+        {
+            // line of sight prima di sparare
+            if (CheckLineOfSight(cachedAimPoint))
+                TryShoot();
+        }
         else if (!reloading)
+        {
             Reload();
+        }
     }
 
     private void ScanForPlayer()
@@ -92,52 +88,35 @@ public class EnemyShooter : Shooter
         scanTimer = Mathf.Max(0.01f, scanFrequency);
 
         bool previouslySpotted = playerSpotted;
+        playerSpotted = false;
+        playerTr = null;
+        playerCollider = null;
 
         Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius, ~0, QueryTriggerInteraction.Ignore);
 
-        Health foundHealth = null;
-        Collider foundCollider = null;
-
         for (int i = 0; i < colliders.Length; i++)
         {
-            // Importante: spesso Health sta sul parent (non sul collider colpito)
             Health h = colliders[i].GetComponentInParent<Health>();
             if (h != null && h.Team == Team.Player)
             {
-                foundHealth = h;
-                foundCollider = colliders[i];
-                break;
+                playerSpotted = true;
+                playerTr = h.transform;
+                playerCollider = colliders[i]; // spesso è un child collider, va benissimo per bounds.center
+
+                if (!previouslySpotted)
+                {
+                    spotTimer = 0f;
+                    ResetVelocityEstimate();
+                }
+                return;
             }
         }
 
-        if (foundHealth != null)
+        // Se lo perdi
+        if (previouslySpotted)
         {
-            playerSpotted = true;
-            playerHealth = foundHealth;
-            playerTr = foundHealth.transform;
-
-            // per aimpoint: preferisci un collider del player (anche child)
-            playerCollider = foundCollider != null ? foundCollider : playerTr.GetComponentInChildren<Collider>();
-
-            if (!previouslySpotted)
-            {
-                spotTimer = 0f;
-                ResetVelocityEstimate();
-            }
-        }
-        else
-        {
-            // perso il player
-            if (previouslySpotted)
-            {
-                spotTimer = 0f;
-                ResetVelocityEstimate();
-            }
-
-            playerSpotted = false;
-            playerHealth = null;
-            playerTr = null;
-            playerCollider = null;
+            spotTimer = 0f;
+            ResetVelocityEstimate();
         }
     }
 
@@ -168,37 +147,32 @@ public class EnemyShooter : Shooter
         lastPlayerPos = pos;
     }
 
-    private Vector3 GetAimPoint()
+    private Vector3 GetPlayerAimPointRaw()
     {
         if (playerTr == null)
             return transform.position;
 
-        // Mira al centro del collider (busto), evita "sopra la testa"
         if (playerCollider != null)
             return playerCollider.bounds.center;
 
         Collider c = playerTr.GetComponentInChildren<Collider>();
         if (c != null)
-        {
-            playerCollider = c;
             return c.bounds.center;
-        }
 
-        // fallback
         return playerTr.position + Vector3.up * aimHeightFallback;
     }
+
 
     private Vector3 GetPredictedAimPoint()
     {
         Vector3 origin = (muzzle != null) ? muzzle.position : transform.position;
-        Vector3 targetPos = GetAimPoint();
+        Vector3 target = GetPlayerAimPointRaw();
 
-        float s = Mathf.Max(bulletSpeed, 0.001f);
+        float s = Mathf.Max(currentWeapon.bulletSpeed, 0.001f);
         Vector3 v = estimatedPlayerVel;
-        Vector3 r = targetPos - origin;
+        Vector3 r = target - origin;
 
-        // Solve |r + v t| = s t  -> quadratic:
-        // (v·v - s^2)t^2 + 2(r·v)t + (r·r) = 0
+        // |r + v t| = s t  -> (v·v - s^2)t^2 + 2(r·v)t + (r·r) = 0
         float a = Vector3.Dot(v, v) - s * s;
         float b = 2f * Vector3.Dot(r, v);
         float c = Vector3.Dot(r, r);
@@ -207,18 +181,15 @@ public class EnemyShooter : Shooter
 
         if (Mathf.Abs(a) < 0.0001f)
         {
-            // quasi lineare
-            if (Mathf.Abs(b) > 0.0001f)
-                t = -c / b;
-            else
-                t = 0f;
+            if (Mathf.Abs(b) > 0.0001f) t = -c / b;
+            else t = 0f;
         }
         else
         {
             float disc = b * b - 4f * a * c;
+
             if (disc < 0f)
             {
-                // nessuna soluzione reale -> fallback tempo di volo semplice
                 t = r.magnitude / s;
             }
             else
@@ -227,7 +198,6 @@ public class EnemyShooter : Shooter
                 float t1 = (-b - sqrt) / (2f * a);
                 float t2 = (-b + sqrt) / (2f * a);
 
-                // scegli il più piccolo positivo
                 if (t1 > 0f && t2 > 0f) t = Mathf.Min(t1, t2);
                 else if (t1 > 0f) t = t1;
                 else if (t2 > 0f) t = t2;
@@ -236,27 +206,31 @@ public class EnemyShooter : Shooter
         }
 
         t = Mathf.Clamp(t, 0f, maxLeadTime);
-        return targetPos + v * t;
+        return target + v * t;
     }
 
-    private void RotateTowardsPredictedAimPoint()
+    private bool CanEngage(Vector3 aimPoint)
     {
-        Vector3 predicted = GetPredictedAimPoint();
+        float dist = Vector3.Distance(transform.position, aimPoint);
+        return dist <= engageDistance;
+    }
 
-        // Yaw: ruota il corpo solo su Y verso il punto predetto
-        Vector3 toPred = predicted - transform.position;
-        Vector3 dirYOnly = new Vector3(toPred.x, 0f, toPred.z);
+    private void RotateTowardsAimPoint(Vector3 aimPoint)
+    {
+        // Yaw corpo
+        Vector3 toTarget = aimPoint - transform.position;
+        Vector3 dirY = new Vector3(toTarget.x, 0f, toTarget.z);
 
-        if (dirYOnly.sqrMagnitude > 0.0001f)
+        if (dirY.sqrMagnitude > 0.0001f)
         {
-            Quaternion targetYaw = Quaternion.LookRotation(dirYOnly.normalized);
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetYaw, rotationSpeed * Time.deltaTime);
+            Quaternion yawRot = Quaternion.LookRotation(dirY.normalized);
+            transform.rotation = Quaternion.Lerp(transform.rotation, yawRot, rotationSpeed * Time.deltaTime);
         }
 
-        // Pitch: arma su X (local) usando la muzzle come origine (molto più preciso)
+        // Pitch arma (se presente)
         if (weaponHolder != null && muzzle != null)
         {
-            Vector3 dir = (predicted - muzzle.position).normalized;
+            Vector3 dir = (aimPoint - muzzle.position).normalized;
 
             float horizontal = new Vector3(dir.x, 0f, dir.z).magnitude;
             float targetPitch = -Mathf.Atan2(dir.y, Mathf.Max(horizontal, 0.0001f)) * Mathf.Rad2Deg;
@@ -270,41 +244,13 @@ public class EnemyShooter : Shooter
         }
     }
 
-    protected override void Shoot()
-    {
-        if (!playerSpotted || playerTr == null || muzzle == null || bulletPrefab == null)
-            return;
-
-        Vector3 aimPoint = GetPredictedAimPoint();
-
-        if (!CheckLineOfSight(aimPoint))
-            return;
-
-        bulletsLeft--;
-
-        Vector3 spawnPos = muzzle.position;
-        Vector3 dir = (aimPoint - spawnPos).normalized;
-        Quaternion rot = Quaternion.LookRotation(dir);
-
-        GameObject bulletObj = Instantiate(bulletPrefab, spawnPos, rot);
-        Bullet bullet = bulletObj.GetComponent<Bullet>();
-
-        if (bullet != null)
-        {
-            Collider myCollider = GetComponent<Collider>();
-            bullet.Initialize(bulletSpeed, myHealth.Team, bulletDamage, myCollider);
-        }
-    }
-
     private bool CheckLineOfSight(Vector3 aimPoint)
     {
-        Vector3 origin = (muzzle != null) ? muzzle.position : transform.position;
-        float dist = Vector3.Distance(origin, aimPoint);
+        if (muzzle == null) return false;
 
-        if (dist > engageDistance)
-            return false;
-
+        Vector3 origin = muzzle.position;
         Vector3 dir = (aimPoint - origin).normalized;
+        float dist = Vector3.Distance(origin, aimPoint);
 
         if (Physics.Raycast(origin, dir, out RaycastHit hit, dist, ~0, QueryTriggerInteraction.Ignore))
         {
@@ -313,6 +259,37 @@ public class EnemyShooter : Shooter
         }
 
         return false;
+    }
+
+    protected override Vector3 GetAimPoint()
+    {
+        // Shooter base chiede “aim point”: per l’enemy usiamo quello predetto (cachato)
+        return cachedAimPoint != Vector3.zero ? cachedAimPoint : GetPlayerAimPointRaw();
+    }
+
+    protected override void FirePellet(Vector3 direction, bool ballistic, Vector3 aimPoint)
+    {
+        // Enemy: projectile
+        if (muzzle == null || currentWeapon == null) return;
+        if (currentWeapon.bulletPrefab == null) return;
+
+        Vector3 spawnPos = muzzle.position;
+        Quaternion rot = Quaternion.LookRotation(direction);
+
+        GameObject bulletObj = Instantiate(currentWeapon.bulletPrefab, spawnPos, rot);
+
+        // Se il prefab ha un Rigidbody, abilitiamo la gravità per Ballistic
+        if (bulletObj.TryGetComponent(out Rigidbody rb))
+        {
+            rb.useGravity = ballistic;
+        }
+
+        Bullet bullet = bulletObj.GetComponent<Bullet>();
+        if (bullet != null)
+        {
+            Collider myCollider = GetComponent<Collider>();
+            bullet.Initialize(currentWeapon.bulletSpeed, myHealth.Team, currentWeapon.bulletDamage, myCollider);
+        }
     }
 
     private void OnDrawGizmosSelected()

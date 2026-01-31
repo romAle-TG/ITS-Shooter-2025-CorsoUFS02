@@ -3733,11 +3733,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShooter
   muzzle: {fileID: 1227077698}
-  range: 100
-  bulletDamage: 10
-  clipSize: 15
-  fireRate: 15
-  reloadTime: 2
+  currentWeapon: {fileID: 0}
+  bulletsLeft: 25
 --- !u!1 &1244291660
 GameObject:
   m_ObjectHideFlags: 0
@@ -6403,25 +6400,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyShooter
   muzzle: {fileID: 1933582550}
-  range: 100
-  bulletDamage: 10
-  clipSize: 15
-  fireRate: 15
-  reloadTime: 2
+  currentWeapon: {fileID: 0}
+  bulletsLeft: 25
   detectionRadius: 50
   scanFrequency: 0.5
   spotReactionTime: 1.5
   engageDistance: 50
   rotationSpeed: 10
+  weaponHolderTransform: {fileID: 0}
   weaponPitchSpeed: 10
   minWeaponPitch: -45
   maxWeaponPitch: 60
   velocityLerp: 0.4
   maxLeadTime: 1.25
   aimHeightFallback: 1.2
-  bulletSpeed: 20
-  bulletPrefab: {fileID: 920719618437235345, guid: 991430980c6269d41af1f3258dc4ca47, type: 3}
-  weaponHolderTransform: {fileID: 0}
 --- !u!114 &6709672657740628908 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1303166593676916812, guid: c9192b5e29460a144ba247224e702ffd, type: 3}
