@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78c9fe2ea3e00ce40b1c8222b534eaaa, type: 3}
+  m_Name: Grunt 1
+  m_EditorClassIdentifier: Assembly-CSharp::EntityDataSO
+  baseEntity: {fileID: -7775142830727012110, guid: c9192b5e29460a144ba247224e702ffd, type: 3}
+  maxEntityHealth: 40
+  startingEntityHealth: 40
+  entityColor: {r: 0, g: 0.1171999, b: 1, a: 1}
+  size: 1
+  speed: 5
+  engageDistance: 40
+  weapon: {fileID: 11400000, guid: eb6dc044acded23408da1eeda3a5178a, type: 2}
