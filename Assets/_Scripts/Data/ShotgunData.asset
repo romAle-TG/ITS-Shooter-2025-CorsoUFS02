@@ -23,6 +23,9 @@ MonoBehaviour:
   reloadTime: 1.2
   bulletPrefab: {fileID: 920719618437235345, guid: 991430980c6269d41af1f3258dc4ca47, type: 3}
   bulletSpeed: 25
+  tracerPrefab: {fileID: 8694186915514446339, guid: ab92daf16c530be4587ed27fe5c86364, type: 3}
+  tracerColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  tracerLifetime: 0.3
   weaponModel: {fileID: 100000, guid: bf2593fe0c804b84688e307cfb1ddfae, type: 3}
   pellets: 1
   spreadAngle: 0

@@ -12,6 +12,8 @@ public class PlayerShooter : Shooter
     {
         base.Awake();
 
+        reloadCircle.fillAmount = 0f;
+
         inputActions = new PlayerInputActions();
 
         inputActions.Player.Reload.performed += _ => Reload();
@@ -61,6 +63,27 @@ public class PlayerShooter : Shooter
         RaycastHit hit;
         bool hitSomething = Physics.Raycast(muzzle.position, direction, out hit, currentWeapon.range);
 
+        // Determina il punto finale del tracer
+        Vector3 endPoint = hitSomething ? hit.point : muzzle.position + direction * currentWeapon.range;
+
+        // Spawna il tracer visuale se configurato
+        if (currentWeapon.tracerPrefab != null)
+        {
+            GameObject tracerObj = Instantiate(currentWeapon.tracerPrefab);
+            BulletTracer tracer = tracerObj.GetComponent<BulletTracer>();
+
+            if (tracer != null)
+            {
+                tracer.Initialize(muzzle.position, endPoint, currentWeapon.tracerLifetime, currentWeapon.tracerColor);
+            }
+            else
+            {
+                Debug.LogWarning("TracerPrefab non ha il component BulletTracer!");
+                Destroy(tracerObj);
+            }
+        }
+
+        // Applica danno se ha colpito qualcosa
         if (!hitSomething || hit.collider == null) return;
 
         if (hit.collider.TryGetComponent(out Health healthHit) && healthHit.Team != Team.Player)
@@ -83,9 +106,7 @@ public class PlayerShooter : Shooter
         bulletsLeft = currentWeapon != null ? currentWeapon.clipSize : bulletsLeft;
         reloading = false;
         reloadingCrt = null;
-
     }
-
     private void OnEnable() => inputActions?.Enable();
     private void OnDisable() => inputActions?.Disable();
     private void OnDestroy() => inputActions?.Dispose();
