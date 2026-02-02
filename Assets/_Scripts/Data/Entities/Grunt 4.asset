@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 78c9fe2ea3e00ce40b1c8222b534eaaa, type: 3}
-  m_Name: Grunt 1
+  m_Name: Grunt 4
   m_EditorClassIdentifier: Assembly-CSharp::EntityDataSO
   baseEntity: {fileID: -7775142830727012110, guid: c9192b5e29460a144ba247224e702ffd, type: 3}
-  maxEntityHealth: 30
-  startingEntityHealth: 30
-  entityColor: {r: 0, g: 0.1171999, b: 1, a: 1}
-  size: 1
+  maxEntityHealth: 150
+  startingEntityHealth: 150
+  entityColor: {r: 0, g: 0, b: 0, a: 1}
+  size: 2
   speed: 5
-  engageDistance: 40
+  engageDistance: 70
   weapon: {fileID: 11400000, guid: eb6dc044acded23408da1eeda3a5178a, type: 2}

@@ -12,7 +12,6 @@ public class EnemyShooter : Shooter
     [SerializeField] private float rotationSpeed = 10f;
 
     [Header("Weapon Pitch")]
-    [SerializeField] private Transform weaponHolderTransform;
     [SerializeField] private float weaponPitchSpeed = 10f;
     [SerializeField] private float minWeaponPitch = -45f;
     [SerializeField] private float maxWeaponPitch = 60f;

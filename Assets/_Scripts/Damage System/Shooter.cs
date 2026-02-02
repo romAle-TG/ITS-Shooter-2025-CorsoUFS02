@@ -8,6 +8,7 @@ public abstract class Shooter : MonoBehaviour
 
     [Header("Weapon")]
     [SerializeField] protected WeaponData currentWeapon;
+    [SerializeField] protected Transform weaponHolderTransform;
 
     [SerializeField] protected int bulletsLeft;
 
@@ -29,11 +30,16 @@ public abstract class Shooter : MonoBehaviour
     {
         currentWeapon = weapon;
 
-        if (currentWeapon == null)
-            return;
-
         if (refillAmmo)
             bulletsLeft = currentWeapon.clipSize;
+
+        if (weaponHolderTransform.childCount > 1)
+        {
+            Destroy(weaponHolderTransform.GetChild(1).gameObject);
+        }
+
+        Transform  weaponTransform = Instantiate(weapon.weaponModel, weaponHolderTransform.position, weaponHolderTransform.rotation).transform;
+        weaponTransform.SetParent(weaponHolderTransform);
     }
 
     protected virtual void TryShoot()
@@ -96,7 +102,7 @@ public abstract class Shooter : MonoBehaviour
         reloadingCrt = StartCoroutine(ReloadWait(currentWeapon.reloadTime));
     }
 
-    protected IEnumerator ReloadWait(float reloadTime)
+    protected virtual IEnumerator ReloadWait(float reloadTime)
     {
         yield return new WaitForSeconds(reloadTime);
         bulletsLeft = currentWeapon != null ? currentWeapon.clipSize : bulletsLeft;

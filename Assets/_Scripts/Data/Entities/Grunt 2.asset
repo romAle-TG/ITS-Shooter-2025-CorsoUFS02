@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: Grunt 2
   m_EditorClassIdentifier: Assembly-CSharp::EntityDataSO
   baseEntity: {fileID: -7775142830727012110, guid: c9192b5e29460a144ba247224e702ffd, type: 3}
-  maxEntityHealth: 60
-  startingEntityHealth: 60
+  maxEntityHealth: 50
+  startingEntityHealth: 50
   entityColor: {r: 0.809837, g: 1, b: 0, a: 1}
-  size: 1.2
+  size: 1.25
   speed: 5
   engageDistance: 50
   weapon: {fileID: 11400000, guid: eb6dc044acded23408da1eeda3a5178a, type: 2}

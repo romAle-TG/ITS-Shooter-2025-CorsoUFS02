@@ -1,7 +1,10 @@
+using System.Collections;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerShooter : Shooter
 {
+    [SerializeField] Image reloadCircle;
     private PlayerInputActions inputActions;
     private bool isHoldingFire;
 
@@ -64,6 +67,23 @@ public class PlayerShooter : Shooter
         {
             healthHit.TakeDamage(currentWeapon.bulletDamage);
         }
+    }
+
+    protected override IEnumerator ReloadWait(float reloadTime)
+    {
+        float elapsed = 0f;
+        while (elapsed < reloadTime)
+        {
+            elapsed += Time.deltaTime;
+            reloadCircle.fillAmount = elapsed / reloadTime;
+            yield return null;
+        }
+
+        reloadCircle.fillAmount = 0f;
+        bulletsLeft = currentWeapon != null ? currentWeapon.clipSize : bulletsLeft;
+        reloading = false;
+        reloadingCrt = null;
+
     }
 
     private void OnEnable() => inputActions?.Enable();

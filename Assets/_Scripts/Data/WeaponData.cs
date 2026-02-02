@@ -35,6 +35,9 @@ public class WeaponData : ScriptableObject
     public GameObject bulletPrefab;
     [Min(0.1f)] public float bulletSpeed = 20f;
 
+    [Header("Weapon Model")]
+    public GameObject weaponModel;
+
     [Header("Shotgun (only if Shotgun)")]
     [Min(1)] public int pellets = 8;
     [Range(0f, 25f)] public float spreadAngle = 6f;
