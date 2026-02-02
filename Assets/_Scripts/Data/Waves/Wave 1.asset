@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 188698ce397e3944fa1d22c53e631c16, type: 3}
   m_Name: Wave 1
   m_EditorClassIdentifier: Assembly-CSharp::WaveData
-  enemiesInWave: 4
+  enemiesInWave: 3
   candidateEntities:
   - {fileID: 11400000, guid: e2cca2b3473a02f4d8ed11f2f8dffaa4, type: 2}

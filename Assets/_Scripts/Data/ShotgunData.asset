@@ -19,11 +19,11 @@ MonoBehaviour:
   range: 50
   bulletDamage: 10
   clipSize: 100
-  fireRate: 15
+  fireRate: 1
   reloadTime: 1.2
   bulletPrefab: {fileID: 920719618437235345, guid: 991430980c6269d41af1f3258dc4ca47, type: 3}
-  bulletSpeed: 15
-  pellets: 8
-  spreadAngle: 6
+  bulletSpeed: 25
+  pellets: 1
+  spreadAngle: 0
   useBallisticAim: 1
   gravityMultiplier: 1
