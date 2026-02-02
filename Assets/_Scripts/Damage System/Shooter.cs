@@ -43,7 +43,7 @@ public abstract class Shooter : MonoBehaviour
         if (reloading) return;
         if (bulletsLeft <= 0) return;
 
-        // Consuma 1 colpo per ìtrigger pullî
+        // Consuma 1 colpo per ‚Äútrigger pull‚Äù
         bulletsLeft--;
 
         Vector3 aimPoint = GetAimPoint();
@@ -114,7 +114,7 @@ public abstract class Shooter : MonoBehaviour
     // --- Hooks (override per Enemy/Player) ---
 
     /// <summary>
-    /// Punto che stai ìmirandoî. Player: avanti. Enemy: posizione predetta del player.
+    /// Punto che stai ‚Äúmirando‚Äù. Player: avanti. Enemy: posizione predetta del player.
     /// </summary>
     protected virtual Vector3 GetAimPoint()
     {
@@ -131,7 +131,7 @@ public abstract class Shooter : MonoBehaviour
     }
 
     /// <summary>
-    /// ìSparo elementareî: 1 pellet/raycast o 1 proiettile. Implementato dalle classi figlie.
+    /// ‚ÄúSparo elementare‚Äù: 1 pellet/raycast o 1 proiettile. Implementato dalle classi figlie.
     /// </summary>
     protected abstract void FirePellet(Vector3 direction, bool ballistic, Vector3 aimPoint);
 
@@ -149,8 +149,8 @@ public abstract class Shooter : MonoBehaviour
     }
 
     /// <summary>
-    /// Calcolo direzione balistica per colpire target con velocit‡ iniziale speed e gravit‡ g (positiva).
-    /// Ritorna false se non cíË soluzione reale.
+    /// Calcolo direzione balistica per colpire target con velocit√† iniziale speed e gravit√† g (positiva).
+    /// Ritorna false se non c‚Äô√® soluzione reale.
     /// </summary>
     protected bool TryGetBallisticDirection(Vector3 origin, Vector3 target, float speed, float g, out Vector3 dir)
     {
@@ -175,7 +175,7 @@ public abstract class Shooter : MonoBehaviour
 
         float sqrt = Mathf.Sqrt(discriminant);
 
-        // angolo basso (pi˘ ìtesoî)
+        // angolo basso (pi√π ‚Äúteso‚Äù)
         float angle = Mathf.Atan((v2 - sqrt) / (g * x));
 
         Vector3 dirXZ = toTargetXZ.normalized;

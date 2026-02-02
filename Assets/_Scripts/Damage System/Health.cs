@@ -1,7 +1,6 @@
 using System;
 using UnityEngine;
 
-
 public enum Team
 {
     Neutral = 0,
@@ -41,6 +40,14 @@ public class Health : MonoBehaviour
         NotifyHealthChanged();
     }
 
+    public void SetHealth(int _maxHealth, int _currentHealth)
+    {
+        maxHealth = _maxHealth;
+        currentHealth = _currentHealth;
+
+        NotifyHealthChanged();
+    }
+
     public void TakeDamage(int amount)
     {
         if (amount <= 0 || _isDead)
@@ -73,7 +80,7 @@ public class Health : MonoBehaviour
 
     private void NotifyHealthChanged()
     {
-        Debug.Log($"VITA CORRENTE DEL NEMICO: {currentHealth}/{maxHealth}");
+        Debug.Log($"VITA CORRENTE DI {gameObject.name}: {currentHealth}/{maxHealth}");
         OnHealthChanged?.Invoke(currentHealth, maxHealth);
     }
 

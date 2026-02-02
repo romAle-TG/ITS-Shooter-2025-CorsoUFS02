@@ -292,6 +292,11 @@ public class EnemyShooter : Shooter
         }
     }
 
+    public void SetEngageDistance(float _engageDistance)
+    {
+        engageDistance = _engageDistance;
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.yellow;
