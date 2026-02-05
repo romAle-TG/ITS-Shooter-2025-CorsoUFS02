@@ -1305,6 +1305,7 @@ MonoBehaviour:
   currentWeapon: {fileID: 11400000, guid: eb6dc044acded23408da1eeda3a5178a, type: 2}
   weaponHolderTransform: {fileID: 4243371153570508, guid: 8b0b86b42def11849a8eba21f4a6a684, type: 3}
   bulletsLeft: 50
+  reloadCircle: {fileID: 0}
 --- !u!1001 &1331188426781406910
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1319,7 +1320,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4243371153570508, guid: 8b0b86b42def11849a8eba21f4a6a684, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.6
+      value: 0.528
       objectReference: {fileID: 0}
     - target: {fileID: 4243371153570508, guid: 8b0b86b42def11849a8eba21f4a6a684, type: 3}
       propertyPath: m_LocalPosition.y

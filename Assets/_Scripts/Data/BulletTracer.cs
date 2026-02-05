@@ -56,7 +56,7 @@ public class BulletTracer : MonoBehaviour
         // Auto-distruzione dopo il lifetime
         if (Time.time >= spawnTime + lifetime)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
         }
     }
 }

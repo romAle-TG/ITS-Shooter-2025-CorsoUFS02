@@ -107,6 +107,7 @@ public class PlayerShooter : Shooter
         reloading = false;
         reloadingCrt = null;
     }
+
     private void OnEnable() => inputActions?.Enable();
     private void OnDisable() => inputActions?.Disable();
     private void OnDestroy() => inputActions?.Dispose();

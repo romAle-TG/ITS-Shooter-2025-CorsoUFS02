@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class Shooter : MonoBehaviour
@@ -11,6 +12,7 @@ public abstract class Shooter : MonoBehaviour
     [SerializeField] protected Transform weaponHolderTransform;
 
     [SerializeField] protected int bulletsLeft;
+    [SerializeField] protected int bulletPoolSize = 30;
 
     protected bool readyToShoot;
     protected bool reloading;
@@ -23,12 +25,15 @@ public abstract class Shooter : MonoBehaviour
         readyToShoot = true;
 
         if (currentWeapon != null)
-            bulletsLeft = currentWeapon.clipSize;
+            EquipWeapon(currentWeapon);
     }
 
     public virtual void EquipWeapon(WeaponData weapon, bool refillAmmo = true)
     {
         currentWeapon = weapon;
+
+        //if (currentWeapon == null)
+        //    return;
 
         if (refillAmmo)
             bulletsLeft = currentWeapon.clipSize;
@@ -38,7 +43,7 @@ public abstract class Shooter : MonoBehaviour
             Destroy(weaponHolderTransform.GetChild(1).gameObject);
         }
 
-        Transform  weaponTransform = Instantiate(weapon.weaponModel, weaponHolderTransform.position, weaponHolderTransform.rotation).transform;
+        Transform weaponTransform = Instantiate(weapon.weaponModel, weaponHolderTransform.position, weaponHolderTransform.rotation).transform;
         weaponTransform.SetParent(weaponHolderTransform);
     }
 
@@ -135,6 +140,40 @@ public abstract class Shooter : MonoBehaviour
         Vector3 dir = (aimPoint - muzzle.position);
         return dir.sqrMagnitude > 0.0001f ? dir.normalized : muzzle.forward;
     }
+
+    #region POOLING
+    //POOLING
+    protected Dictionary<GameObject, Queue<GameObject>> bulletPools = new();
+    protected void EnsurePoolFor(GameObject prefab)
+    {
+        if (prefab == null || bulletPools.ContainsKey(prefab)) return;
+
+        Queue<GameObject> q = new Queue<GameObject>(Mathf.Max(1, bulletPoolSize));
+        for (int i = 0; i < Mathf.Max(1, bulletPoolSize); i++)
+        {
+            var go = Instantiate(prefab);
+            go.SetActive(false);
+            q.Enqueue(go);
+        }
+        bulletPools[prefab] = q;
+    }
+
+    protected GameObject TakeFromQueue(GameObject prefab)
+    {
+        var q = bulletPools[prefab];
+        var go = q.Dequeue();
+
+        if (go.activeSelf)
+        {
+            // riciclo forzato
+            go.SetActive(false);
+        }
+
+        q.Enqueue(go);
+        return go;
+    }
+
+    #endregion
 
     /// <summary>
     /// “Sparo elementare”: 1 pellet/raycast o 1 proiettile. Implementato dalle classi figlie.

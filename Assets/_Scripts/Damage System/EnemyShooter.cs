@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyShooter : Shooter
@@ -43,7 +44,11 @@ public class EnemyShooter : Shooter
         myHealth = GetComponent<Health>();
         weaponHolder = weaponHolderTransform;
 
-        scanTimer = 0f; // scan immediato
+        scanTimer = 0f; // primo scan immediato
+
+        // Pre-warm opzionale per l'arma corrente
+        if (currentWeapon != null && currentWeapon.bulletPrefab != null)
+            EnsurePoolFor(currentWeapon.bulletPrefab);
     }
 
     private void Update()
@@ -70,7 +75,6 @@ public class EnemyShooter : Shooter
 
         if (bulletsLeft > 0)
         {
-            // line of sight prima di sparare
             if (CheckLineOfSight(cachedAimPoint))
                 TryShoot();
         }
@@ -91,7 +95,8 @@ public class EnemyShooter : Shooter
         playerTr = null;
         playerCollider = null;
 
-        Collider[] colliders = Physics.OverlapSphere(transform.position, detectionRadius, ~0, QueryTriggerInteraction.Ignore);
+        Collider[] colliders = Physics.OverlapSphere(
+            transform.position, detectionRadius, ~0, QueryTriggerInteraction.Ignore);
 
         for (int i = 0; i < colliders.Length; i++)
         {
@@ -100,7 +105,7 @@ public class EnemyShooter : Shooter
             {
                 playerSpotted = true;
                 playerTr = h.transform;
-                playerCollider = colliders[i]; // spesso è un child collider, va benissimo per bounds.center
+                playerCollider = colliders[i];
 
                 if (!previouslySpotted)
                 {
@@ -111,7 +116,7 @@ public class EnemyShooter : Shooter
             }
         }
 
-        // Se lo perdi
+        // perso di vista
         if (previouslySpotted)
         {
             spotTimer = 0f;
@@ -160,7 +165,6 @@ public class EnemyShooter : Shooter
 
         return playerTr.position + Vector3.up * aimHeightFallback;
     }
-
 
     private Vector3 GetPredictedAimPoint()
     {
@@ -262,39 +266,56 @@ public class EnemyShooter : Shooter
 
     protected override Vector3 GetAimPoint()
     {
-        // Shooter base chiede “aim point”: per l’enemy usiamo quello predetto (cachato)
+        // Shooter base chiede l'aim point: per l'enemy usiamo quello predetto (cache)
         return cachedAimPoint != Vector3.zero ? cachedAimPoint : GetPlayerAimPointRaw();
     }
 
     protected override void FirePellet(Vector3 direction, bool ballistic, Vector3 aimPoint)
     {
-        // Enemy: projectile
         if (muzzle == null || currentWeapon == null) return;
         if (currentWeapon.bulletPrefab == null) return;
 
-        Vector3 spawnPos = muzzle.position;
-        Quaternion rot = Quaternion.LookRotation(direction);
+        // Pool per l'arma corrente
+        EnsurePoolFor(currentWeapon.bulletPrefab);
 
-        GameObject bulletObj = Instantiate(currentWeapon.bulletPrefab, spawnPos, rot);
+        // 1) prendi dal ring, 2) configura, 3) attiva
+        GameObject bulletObj = TakeFromQueue(currentWeapon.bulletPrefab);
 
-        // Se il prefab ha un Rigidbody, abilitiamo la gravità per Ballistic
+        bulletObj.transform.SetPositionAndRotation(
+            muzzle.position, Quaternion.LookRotation(direction));
+        bulletObj.SetActive(true);
+
+        // reset/velocità (nessuna cache: semplice e chiaro)
         if (bulletObj.TryGetComponent(out Rigidbody rb))
         {
             rb.useGravity = ballistic;
+            rb.linearVelocity = muzzle.forward * currentWeapon.bulletSpeed;
+            rb.angularVelocity = Vector3.zero;
         }
 
-        Bullet bullet = bulletObj.GetComponent<Bullet>();
-        if (bullet != null)
+        // inizializzazione gameplay (danno/team)
+        if (bulletObj.TryGetComponent(out Bullet bullet))
         {
             Collider myCollider = GetComponent<Collider>();
             bullet.Initialize(currentWeapon.bulletSpeed, myHealth.Team, currentWeapon.bulletDamage, myCollider);
         }
+
+        // NOTA: il despawn/timeout è gestito nel Bullet (OnEnable/Invoke) oppure via collisione (SetActive(false))
+    }
+
+    void OnDisable()
+    {
+        // spegne con grazia tutti i proiettili in tutti i pool
+        foreach (var kv in bulletPools)
+            foreach (var b in kv.Value)
+                if (b) b.SetActive(false);
     }
 
     public void SetEngageDistance(float _engageDistance)
     {
         engageDistance = _engageDistance;
     }
+
 
     private void OnDrawGizmosSelected()
     {
