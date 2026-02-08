@@ -10,23 +10,23 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c44e1092791d5ff46b35b688c3f565bd, type: 3}
-  m_Name: ShotgunData
+  m_Name: ShotgunData 2
   m_EditorClassIdentifier: Assembly-CSharp::WeaponData
-  weaponId: 1
-  displayName: Weapon_1
+  weaponId: 2
+  displayName: Weapon_2
   bulletPattern: 2
   shootingBehavior: 0
-  range: 50
-  bulletDamage: 10
+  range: 30
+  bulletDamage: 3
   clipSize: 10
-  fireRate: 1
-  reloadTime: 1.2
+  fireRate: 0.2
+  reloadTime: 1
   bulletPrefab: {fileID: 920719618437235345, guid: 991430980c6269d41af1f3258dc4ca47, type: 3}
-  bulletSpeed: 25
+  bulletSpeed: 30
   tracerPrefab: {fileID: 8694186915514446339, guid: ab92daf16c530be4587ed27fe5c86364, type: 3}
   tracerColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   tracerLifetime: 0.3
-  weaponModel: {fileID: 100000, guid: bf2593fe0c804b84688e307cfb1ddfae, type: 3}
+  weaponModel: {fileID: 1095254202041702, guid: 6273e2936e9d6a24e9f64c7c70d6bd19, type: 3}
   pellets: 1
   spreadAngle: 0
   useBallisticAim: 1

@@ -124,6 +124,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec747c6560043ad4799437dd5dac6101, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUp_Weapon
-  rotationSpeed: 1
-  weapon: {fileID: 11400000, guid: eb6dc044acded23408da1eeda3a5178a, type: 2}
+  rotationSpeed: 0.5
+  weapon: {fileID: 11400000, guid: c96301ab4b6bcd64e93e30af743630b5, type: 2}
   modelContainer: {fileID: 7880577860642646163}

@@ -5074,6 +5074,10 @@ PrefabInstance:
       value: WeaponPickUp
       objectReference: {fileID: 0}
     - target: {fileID: 5395405374505879236, guid: 6d99ae4dfc26a9a4692551e41192360a, type: 3}
+      propertyPath: weapon
+      value: 
+      objectReference: {fileID: 11400000, guid: c96301ab4b6bcd64e93e30af743630b5, type: 2}
+    - target: {fileID: 5395405374505879236, guid: 6d99ae4dfc26a9a4692551e41192360a, type: 3}
       propertyPath: rotationSpeed
       value: 0.5
       objectReference: {fileID: 0}
