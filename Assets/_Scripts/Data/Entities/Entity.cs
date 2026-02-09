@@ -4,6 +4,7 @@ public class Entity : MonoBehaviour
 {
     [SerializeField] EntityDataSO m_Entity;
     [SerializeField] Health m_Health;
+    [SerializeField] EnemyAIController m_Controller;
     public Health EntityHealth => m_Health;
     [SerializeField] Shooter m_Shooter;
     [SerializeField] MeshRenderer m_Renderer;
@@ -26,6 +27,11 @@ public class Entity : MonoBehaviour
             m_Shooter = GetComponentInChildren<Shooter>();
         }
 
+        if (m_Controller == null)
+        {
+            m_Controller = GetComponent<EnemyAIController>();
+        }
+
         InitializeEntity(m_Entity);
     }
 
@@ -33,16 +39,26 @@ public class Entity : MonoBehaviour
     {
         m_Entity = entity;
 
-        if (m_Health != null) m_Health.SetHealth(m_Entity.maxEntityHealth, m_Entity.startingEntityHealth);
+        // Inizializza Health
+        if (m_Health != null)
+            m_Health.SetHealth(m_Entity.maxEntityHealth, m_Entity.startingEntityHealth);
+
+        // Equipaggia arma
         if (m_Shooter != null)
         {
             m_Shooter.EquipWeapon(m_Entity.weapon);
-            if (m_Shooter is EnemyShooter es) es.SetEngageDistance(m_Entity.engageDistance);
         }
-        if (m_Renderer != null) m_Renderer.material.color = m_Entity.entityColor;
+
+        // Configura engage distance tramite AIController (non pių Shooter)
+        if (m_Controller != null)
+        {
+            m_Controller.SetEngageDistance(m_Entity.engageDistance);
+        }
+
+        // Aspetto visivo
+        if (m_Renderer != null)
+            m_Renderer.material.color = m_Entity.entityColor;
 
         transform.localScale = Vector3.one * m_Entity.size;
     }
-
-
 }

@@ -26,7 +26,7 @@ MonoBehaviour:
   tracerPrefab: {fileID: 8694186915514446339, guid: ab92daf16c530be4587ed27fe5c86364, type: 3}
   tracerColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   tracerLifetime: 0.3
-  weaponModel: {fileID: 100000, guid: bf2593fe0c804b84688e307cfb1ddfae, type: 3}
+  weaponModel: {fileID: 1236257789494122, guid: 8b0b86b42def11849a8eba21f4a6a684, type: 3}
   pellets: 1
   spreadAngle: 0
   useBallisticAim: 1

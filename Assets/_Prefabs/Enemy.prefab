@@ -32,6 +32,60 @@ Transform:
   - {fileID: 2835357894552934603}
   m_Father: {fileID: 1510612826704289958}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &643779278575073263
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 205956126883149084}
+  - component: {fileID: 6388931495369488167}
+  m_Layer: 0
+  m_Name: VisionScanner
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &205956126883149084
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 643779278575073263}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -6.653059, y: -1, z: 1.3920498}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1510612826704289958}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &6388931495369488167
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 643779278575073263}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8aea2eaa4a197e34eaf97893633e972b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::VisionScanner
+  detectionRadius: 30
+  checkInterval: 0.2
+  obstacleMask:
+    serializedVersion: 2
+    m_Bits: 1
+  hasTarget: 0
+  canSeePlayer: 0
+  distanceToPlayer: 999
+  targetPosition: {x: 0, y: 0, z: 0}
+  aimPoint: {x: 0, y: 0, z: 0}
 --- !u!1 &687451617472525570
 GameObject:
   m_ObjectHideFlags: 0
@@ -151,6 +205,7 @@ GameObject:
   - component: {fileID: 1170940142517258592}
   - component: {fileID: 1303166593676916812}
   - component: {fileID: 1605919134014409811}
+  - component: {fileID: 8127915449339411438}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -173,6 +228,7 @@ Transform:
   m_Children:
   - {fileID: 7676023019347136032}
   - {fileID: 3675195973679047345}
+  - {fileID: 205956126883149084}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &-7775142830727012110
@@ -189,6 +245,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Entity
   m_Entity: {fileID: 11400000, guid: e2cca2b3473a02f4d8ed11f2f8dffaa4, type: 2}
   m_Health: {fileID: 1303166593676916812}
+  m_Controller: {fileID: 8127915449339411438}
   m_Shooter: {fileID: 1605919134014409811}
   m_Renderer: {fileID: 3298728911428660217}
 --- !u!33 &6485520468284642297
@@ -351,20 +408,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::EnemyShooter
   muzzle: {fileID: 1991255117913659959}
   currentWeapon: {fileID: 11400000, guid: eb6dc044acded23408da1eeda3a5178a, type: 2}
-  weaponHolderTransform: {fileID: 4243371153570508, guid: 8b0b86b42def11849a8eba21f4a6a684, type: 3}
+  weaponHolderTransform: {fileID: 7676023019347136032}
   bulletsLeft: 10
-  detectionRadius: 50
-  scanFrequency: 0.5
-  spotReactionTime: 1.5
-  engageDistance: 50
-  rotationSpeed: 50
+  bulletPoolSize: 30
   weaponPitchSpeed: 10
   minWeaponPitch: -45
   maxWeaponPitch: 60
   velocityLerp: 0.4
   maxLeadTime: 1.25
   aimHeightFallback: 1.2
-  poolSize: 30
+--- !u!114 &8127915449339411438
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2420538522366535527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fc79039aebc4d364db40f99bdf1f585b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyAIController
+  shooter: {fileID: 1605919134014409811}
+  shootRange: 18
+  engageDistance: 50
+  currentState: 0
+  vision: {fileID: 6388931495369488167}
+  health: {fileID: 1303166593676916812}
 --- !u!1 &5893085331022950417
 GameObject:
   m_ObjectHideFlags: 0
@@ -465,7 +535,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7676023019347136032}
   m_Layer: 0
-  m_Name: WeaponHolder
+  m_Name: EnemyWeaponHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -480,12 +550,12 @@ Transform:
   m_GameObject: {fileID: 6975836741419160406}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -2.61806, y: -1, z: 2.4295602}
+  m_LocalPosition: {x: 0.533, y: 0.04, z: 0.168}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 3692393108592388559}
   - {fileID: 1991255117913659959}
+  - {fileID: 3692393108592388559}
   m_Father: {fileID: 1510612826704289958}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7571811100159998330
@@ -513,7 +583,7 @@ Transform:
   m_GameObject: {fileID: 7571811100159998330}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 3.1611605, y: 1.19925, z: -0.95255995}
+  m_LocalPosition: {x: 0.18, y: -0.34, z: 0.31}
   m_LocalScale: {x: 0.25, y: 0.25, z: 1.75}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -533,15 +603,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4243371153570508, guid: 8b0b86b42def11849a8eba21f4a6a684, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 3.15
+      value: 3.664
       objectReference: {fileID: 0}
     - target: {fileID: 4243371153570508, guid: 8b0b86b42def11849a8eba21f4a6a684, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 1.15
+      value: 1.27
       objectReference: {fileID: 0}
     - target: {fileID: 4243371153570508, guid: 8b0b86b42def11849a8eba21f4a6a684, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -2
+      value: -1.918
       objectReference: {fileID: 0}
     - target: {fileID: 4243371153570508, guid: 8b0b86b42def11849a8eba21f4a6a684, type: 3}
       propertyPath: m_LocalRotation.w

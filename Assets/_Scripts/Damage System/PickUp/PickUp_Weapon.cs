@@ -7,22 +7,22 @@ public class PickUp_Weapon : PickUp
 
     private void Awake()
     {
-        Inizialize();
+        Initialize();
     }
 
-    void Inizialize()
+    void Initialize()
     {
         if (weapon == null) return;
 
         Transform model = Instantiate(weapon.weaponModel, modelContainer).transform;
-        model.parent.localPosition = Vector3.zero;
+        model.transform.localPosition = Vector3.zero;
         model.transform.localRotation = Quaternion.Euler(-45, 0, 0);
     }
 
     public void InjectWeapon(WeaponData _weapon)
     {
         weapon = _weapon;
-        Inizialize();
+        Initialize();
     }
 
     protected override void Absorption(Collider other)
@@ -31,6 +31,8 @@ public class PickUp_Weapon : PickUp
         {
             shooter.EquipWeapon(weapon);
             gameObject.SetActive(false);
+
+            base.Absorption(other);
         }
     }
 }

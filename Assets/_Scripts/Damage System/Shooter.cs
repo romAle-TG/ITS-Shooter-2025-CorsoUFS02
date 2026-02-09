@@ -47,7 +47,7 @@ public abstract class Shooter : MonoBehaviour
         weaponTransform.SetParent(weaponHolderTransform);
     }
 
-    protected virtual void TryShoot()
+    public virtual void TryShoot()
     {
         if (currentWeapon == null) return;
         if (!readyToShoot) return;

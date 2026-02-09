@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3005417390667941626}
   - component: {fileID: 193200356696944453}
   - component: {fileID: 7334152072661172902}
-  - component: {fileID: 5395405374505879236}
+  - component: {fileID: -5355732412182795361}
   m_Layer: 7
   m_Name: WeaponPickUp
   m_TagString: Untagged
@@ -112,7 +112,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.5
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &5395405374505879236
+--- !u!114 &-5355732412182795361
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -121,7 +121,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 198267975123194846}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ec747c6560043ad4799437dd5dac6101, type: 3}
+  m_Script: {fileID: 11500000, guid: aa556802e2b40de45bbbb609638fdc68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PickUp_Weapon
   rotationSpeed: 0.5

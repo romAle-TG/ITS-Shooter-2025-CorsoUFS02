@@ -17,9 +17,9 @@ MonoBehaviour:
   bulletPattern: 2
   shootingBehavior: 0
   range: 30
-  bulletDamage: 3
-  clipSize: 10
-  fireRate: 0.2
+  bulletDamage: 8
+  clipSize: 5
+  fireRate: 0.5
   reloadTime: 1
   bulletPrefab: {fileID: 920719618437235345, guid: 991430980c6269d41af1f3258dc4ca47, type: 3}
   bulletSpeed: 30
@@ -27,7 +27,7 @@ MonoBehaviour:
   tracerColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
   tracerLifetime: 0.3
   weaponModel: {fileID: 1095254202041702, guid: 6273e2936e9d6a24e9f64c7c70d6bd19, type: 3}
-  pellets: 1
+  pellets: 2
   spreadAngle: 0
   useBallisticAim: 1
   gravityMultiplier: 1
