@@ -205,7 +205,9 @@ GameObject:
   - component: {fileID: 1170940142517258592}
   - component: {fileID: 1303166593676916812}
   - component: {fileID: 1605919134014409811}
-  - component: {fileID: 8127915449339411438}
+  - component: {fileID: 5599952171283693441}
+  - component: {fileID: 3580189876298599831}
+  - component: {fileID: 7493828421518442750}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -245,7 +247,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Entity
   m_Entity: {fileID: 11400000, guid: e2cca2b3473a02f4d8ed11f2f8dffaa4, type: 2}
   m_Health: {fileID: 1303166593676916812}
-  m_Controller: {fileID: 8127915449339411438}
+  m_Controller: {fileID: 3580189876298599831}
   m_Shooter: {fileID: 1605919134014409811}
   m_Renderer: {fileID: 3298728911428660217}
 --- !u!33 &6485520468284642297
@@ -376,7 +378,7 @@ Rigidbody:
   m_ImplicitTensor: 1
   m_UseGravity: 1
   m_IsKinematic: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_Constraints: 122
   m_CollisionDetection: 0
 --- !u!114 &1303166593676916812
@@ -417,7 +419,26 @@ MonoBehaviour:
   velocityLerp: 0.4
   maxLeadTime: 1.25
   aimHeightFallback: 1.2
---- !u!114 &8127915449339411438
+--- !u!114 &5599952171283693441
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2420538522366535527}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 97ac7aac45a9f6f4bb7904b20820fc33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaypointPath
+  waypoints:
+  - {fileID: 7676023019347136032}
+  - {fileID: 3675195973679047345}
+  - {fileID: 205956126883149084}
+  showGizmos: 1
+  pathColor: {r: 1, g: 0.61384225, b: 0, a: 1}
+  waypointRadius: 0.5
+--- !u!114 &3580189876298599831
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -430,11 +451,48 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAIController
   shooter: {fileID: 1605919134014409811}
+  patrolPath: {fileID: 5599952171283693441}
+  agent: {fileID: 7493828421518442750}
+  patrolSpeed: 2
+  chaseSpeed: 10
+  fleeSpeed: 10
+  searchSpeed: 5
   shootRange: 18
   engageDistance: 50
+  fleeDistance: 50
+  fleeSafeDistance: 15
+  tooCloseTimer: 1
+  searchDuration: 10
+  lookAroundDuration: 3
+  lookAroundSpeed: 90
+  waypointWaitMin: 2
+  waypointWaitMax: 5
+  waypointReachedDistance: 1
   currentState: 0
   vision: {fileID: 6388931495369488167}
   health: {fileID: 1303166593676916812}
+--- !u!195 &7493828421518442750
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2420538522366535527}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 10
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &5893085331022950417
 GameObject:
   m_ObjectHideFlags: 0
