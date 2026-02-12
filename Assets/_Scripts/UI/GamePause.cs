@@ -9,38 +9,60 @@ public class GamePause : MonoBehaviour
     [SerializeField] private Button unpauseButton;
     [SerializeField] private bool startPaused = false;
 
+    [Header("Main Menù Section")]
+    [SerializeField] Button mainMenuButton;
+    [SerializeField] int menuSceneIndex = 0;
+
     private bool paused;
 
     private void Awake()
     {
         _playerInput = new PlayerInputActions();
+
         _playerInput.Player.Pause.performed += OnPausePerformed;
+        //_playerInput.Player.Pause.performed += (ctx) => TogglePause(); //equivalente alla riga superiore
 
         if (unpauseButton != null)
             unpauseButton.onClick.AddListener(TogglePause);
 
+        if (mainMenuButton != null)
+            mainMenuButton.onClick.AddListener(ReturnToMenu);
+
         SetPaused(startPaused);
     }
 
-    private void OnEnable() => _playerInput?.Enable();
-    private void OnDisable() => _playerInput?.Disable();
+    private void OnEnable()
+    {
+        _playerInput?.Enable();
+    }
+    private void OnDisable()
+    {
+        _playerInput?.Disable();
+    }
 
     private void OnDestroy()
     {
         if (_playerInput != null)
             _playerInput.Player.Pause.performed -= OnPausePerformed;
+        //_playerInput.Player.Pause.performed -= (ctx) => TogglePause();
 
         if (unpauseButton != null)
             unpauseButton.onClick.RemoveListener(TogglePause);
 
+        if (mainMenuButton != null)
+            mainMenuButton.onClick.RemoveListener(ReturnToMenu);
+
         _playerInput?.Dispose();
     }
 
-    private void OnPausePerformed(InputAction.CallbackContext ctx) => TogglePause();
+    private void OnPausePerformed(InputAction.CallbackContext ctx)
+    {
+        TogglePause();
+    }
 
     public void TogglePause() => SetPaused(!paused);
 
-    private void SetPaused(bool value)
+    public void SetPaused(bool value)
     {
         paused = value;
 
@@ -49,5 +71,35 @@ public class GamePause : MonoBehaviour
 
         Time.timeScale = paused ? 0f : 1f;
         Utilities.SetCursorLocked(!paused);
+    }
+
+    public void Pause()
+    {
+        if (pausePanel != null)
+            pausePanel.SetActive(true);
+
+        Time.timeScale = 0f;
+        Utilities.SetCursorLocked(true);
+    }
+
+    public void Unpause()
+    {
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
+        Time.timeScale = 1f;
+        Utilities.SetCursorLocked(false);
+    }
+
+    public void ReturnToMenu()
+    {
+        if (SceneChanger.Instance == null)
+        {
+            Debug.Log("Scene changer not found, failed to load menù");
+            return;
+        }
+
+        SceneChanger.Instance.LoadSingleAsync(menuSceneIndex);
+        
     }
 }

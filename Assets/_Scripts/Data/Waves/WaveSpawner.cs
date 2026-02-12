@@ -20,6 +20,11 @@ public class WaveSpawner : MonoBehaviour
         GenerateWave(waves[currentWave]);
     }
 
+    private void Start()
+    {
+        GameManager.Instance.RegisterSpawner(this);
+    }
+
     void GenerateWave(WaveData wave)
     {
         currentWaveEnemies = wave.enemiesInWave;
