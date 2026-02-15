@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Player Entity
   m_EditorClassIdentifier: Assembly-CSharp::EntityDataSO
   baseEntity: {fileID: 1594172913402164787, guid: 6b03abfef47e27049928f497436d6580, type: 3}
-  maxEntityHealth: 5000
-  startingEntityHealth: 5000
+  maxEntityHealth: 4000
+  startingEntityHealth: 4000
   entityColor: {r: 0, g: 1, b: 1, a: 1}
   size: 1
   speed: 5

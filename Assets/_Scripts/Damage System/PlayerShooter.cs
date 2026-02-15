@@ -8,6 +8,8 @@ public class PlayerShooter : Shooter
     private PlayerInputActions inputActions;
     private bool isHoldingFire;
 
+    [SerializeField] int tracerBulletPubll = 30;
+
     protected override void Awake()
     {
         base.Awake();

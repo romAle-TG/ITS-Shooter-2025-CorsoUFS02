@@ -4,14 +4,14 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    Entity playerEntity;
+    public Entity playerEntity;
     WaveSpawner waveSpawner;
 
     private void Awake()
     {
         if (Instance != null && Instance != this)
         {
-            Destroy(gameObject);
+            Destroy(this.gameObject);
             return;
         }
 
@@ -34,10 +34,14 @@ public class GameManager : MonoBehaviour
     void Defeat(Health playerHealth)
     {
         playerEntity.EntityHealth.OnDied -= Defeat;
+        // Chiamiamo l'UI di fine gioco passando a 'false' (sconfitta)
+        EndGameUI.instance.ShowWinLose(false);
     }
 
     void Victory()
     {
         waveSpawner.OnWavesCompleted -= Victory;
+        // Chiamiamo l'UI di fine gioco passando a 'true' (vittoria)
+        EndGameUI.instance.ShowWinLose(true);
     }
 }

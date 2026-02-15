@@ -17,7 +17,7 @@ MonoBehaviour:
   bulletPattern: 2
   shootingBehavior: 0
   range: 30
-  bulletDamage: 8
+  bulletDamage: 10
   clipSize: 5
   fireRate: 0.5
   reloadTime: 1

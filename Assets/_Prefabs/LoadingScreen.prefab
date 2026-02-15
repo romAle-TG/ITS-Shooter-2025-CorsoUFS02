@@ -360,7 +360,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7443b38edac4ab44880ba3da351251f6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LoadingScreen
-  loadingPanel: {fileID: 2757578117812967313}
+  loadingPanel: {fileID: 576251538596239968}
   loadingBar: {fileID: 6497086620632770281}
 --- !u!1 &7855295115978824115
 GameObject:

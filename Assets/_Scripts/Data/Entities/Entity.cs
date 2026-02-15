@@ -49,7 +49,7 @@ public class Entity : MonoBehaviour
             m_Shooter.EquipWeapon(m_Entity.weapon);
         }
 
-        // Configura engage distance tramite AIController (non pių Shooter)
+        // Configura engage distance tramite AIController (non più Shooter)
         if (m_Controller != null)
         {
             m_Controller.SetEngageDistance(m_Entity.engageDistance);

@@ -23,10 +23,20 @@ public class LoadingScreen : MonoBehaviour
     private void Start()
     {
         loadingPanel.SetActive(false);
+
         if (SceneChanger.Instance != null)
         {
             SceneChanger.Instance.OnLoadingStarted += EnableLoadingScreen;
             SceneChanger.Instance.OnLoadingCompleted += DisableLoadingScreen;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (SceneChanger.Instance != null)
+        {
+            SceneChanger.Instance.OnLoadingStarted -= EnableLoadingScreen;
+            SceneChanger.Instance.OnLoadingCompleted -= DisableLoadingScreen;
         }
     }
 

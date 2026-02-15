@@ -14,7 +14,6 @@ public class Health : MonoBehaviour
     [Header("Health Settings")]
     [SerializeField] private int maxHealth = 100;
     [SerializeField] private Team team = Team.Neutral;
-    [SerializeField] private bool destroyOnDeath = true;
 
     private int currentHealth;
 
@@ -92,13 +91,13 @@ public class Health : MonoBehaviour
         _isDead = true;
         OnDied?.Invoke(this);
 
-        if (destroyOnDeath)
+        if (team == Team.Player)
         {
-            Destroy(gameObject);
+            Debug.Log("SEI STATO SCONFITTO!");
+            // Chiamiamo l'UI di fine gioco passando a 'false' (sconfitta)
+            EndGameUI.instance.ShowWinLose(false);
         }
         else
-        {
             gameObject.SetActive(false);
-        }
     }
 }
