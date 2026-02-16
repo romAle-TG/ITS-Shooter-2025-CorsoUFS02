@@ -482,7 +482,7 @@ public class EnemyState_Flee : EnemyState
             fleeDestination = controller.transform.position + awayDirection * 10f;
             hasValidDestination = false;
 
-            Debug.LogWarning("[FLEE] Could not find valid flee position on NavMesh");
+            //Debug.LogWarning("[FLEE] Could not find valid flee position on NavMesh");
         }
     }
 }
